@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1A1423">
+<title>Косточковый Забег</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+  /* Аркадный автомат: страница сознательно однотемная (тёмный корпус, светящийся экран),
+     поэтому все цвета заданы явно и не зависят от темы зрителя. */
+  :root {
+    --cab:        #1A1423;
+    --cab-2:      #241C31;
+    --edge:       #46375E;
+    --ink:        #F7F0E8;
+    --dim:        #A594BD;
+    --accent:     #FFD23F;
+    --accent-2:   #FF6B4A;
+    --good:       #6BCB77;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--cab);
+    color: var(--ink);
+    font-family: "VT323", ui-monospace, monospace;
+    font-size: 19px;
+    line-height: 1.35;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 740px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 22px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 8px; }
+
+  h1 {
+    font-family: "Press Start 2P", ui-monospace, monospace;
+    font-size: clamp(15px, 4.4vw, 24px);
+    line-height: 1.5;
+    margin: 0;
+    color: var(--accent);
+    text-shadow: 0 3px 0 #7A3E00;
+    text-wrap: balance;
+  }
+
+  .tagline { color: var(--dim); margin: 0; }
+
+  .cab {
+    background: var(--cab-2);
+    border: 3px solid var(--edge);
+    padding: 10px;
+    box-shadow: inset 0 0 0 2px #120D1C, 0 8px 0 #0E0A16;
+    position: relative;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #6BB6FF;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  button, .filebtn {
+    font-family: "Press Start 2P", ui-monospace, monospace;
+    font-size: 10px;
+    line-height: 1;
+    padding: 11px 12px;
+    color: var(--ink);
+    background: #32264A;
+    border: 2px solid var(--edge);
+    box-shadow: 0 3px 0 #120D1C;
+    cursor: pointer;
+    transition: transform .06s steps(2), background .12s;
+  }
+
+  button:hover, .filebtn:hover { background: #3E3059; }
+  button:active, .filebtn:active { transform: translateY(3px); box-shadow: 0 0 0 #120D1C; }
+  button:focus-visible, .filebtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: #7A3E00; border-color: var(--accent); color: var(--accent); }
+  button.primary:hover { background: #96500A; }
+  input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px 22px;
+    border-top: 2px solid var(--edge);
+    padding-top: 14px;
+  }
+
+  .legend h2 {
+    font-family: "Press Start 2P", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .06em;
+    color: var(--accent);
+    margin: 0 0 6px;
+  }
+
+  .legend ul { margin: 0; padding-left: 18px; color: var(--dim); }
+  .legend li { margin-bottom: 2px; }
+  .legend b { color: var(--ink); font-weight: normal; }
+
+  kbd {
+    font-family: "VT323", monospace;
+    font-size: 17px;
+    background: #32264A;
+    border: 1px solid var(--edge);
+    border-bottom-width: 2px;
+    padding: 0 5px;
+    color: var(--ink);
+  }
+
+  .note { color: var(--dim); margin: 0; font-size: 17px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    button, .filebtn { transition: none; }
+  }
+</style>
+<link rel="canonical" href="https://pavelvo2.github.io/kostochkovyy-zabeg/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pavelvo2.github.io/kostochkovyy-zabeg/">
+<meta property="og:title" content="Косточковый Забег">
+<meta property="og:description" content="Восьмибитный раннер: ши-тцу бежит по парку, прыгает через заборы и лужи, ловит косточки и растёт от каждой съеденной.">
+<meta property="og:image" content="https://pavelvo2.github.io/kostochkovyy-zabeg/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pavelvo2.github.io/kostochkovyy-zabeg/preview.png">
+<style>
+  :root { color-scheme: dark; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="masthead">
+    <h1>Косточковый Забег</h1>
+    <p class="tagline">Ши-тцу бежит по парку. Заборы и камни — перепрыгнуть, лужи — не мочить лапы, косточки — ловить на лету.</p>
+  </header>
+
+  <div class="cab">
+    <canvas id="screen" width="320" height="180" aria-label="Игровой экран: собака бежит и прыгает через препятствия"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="btn-start" class="primary" type="button">Играть</button>
+    <label class="filebtn" for="photo">Фото собаки</label>
+    <input type="file" id="photo" accept="image/*">
+    <button id="btn-clear" type="button" hidden>Вернуть Шитцу</button>
+    <button id="btn-sound" type="button">Звук: вкл</button>
+  </div>
+
+  <p class="note" id="photo-note">В игре бежит настоящая ши-тцу — её морда вшита в страницу и видна у всех, кто откроет ссылку. Кнопка «Фото собаки» подставит вместо неё чью-то другую, только в этом браузере.</p>
+
+  <div class="legend">
+    <div>
+      <h2>Управление</h2>
+      <ul>
+        <li><kbd>Пробел</kbd> / <kbd>↑</kbd> / тап — прыжок</li>
+        <li>Держать дольше — прыжок выше</li>
+        <li><kbd>↓</kbd> — быстро вниз</li>
+        <li><kbd>P</kbd> — пауза, <kbd>M</kbd> — звук</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Правила</h2>
+      <ul>
+        <li><b>Забор, камень, бак</b> — удар, минус жизнь</li>
+        <li><b>Лужа</b> — жизнь цела, но серия сбита</li>
+        <li><b>Косточка</b> 10, <b>сосиска</b> 25, <b>миска</b> 50</li>
+        <li>Каждые 5 пойманных — множитель ×2, ×3, ×4</li>
+        <li>Собака растёт от еды — крупная прыгает выше и дольше парит, удар сдувает её обратно</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Морда хозяйской ши-тцу, вырезанная из фото и вшитая в страницу (84x84 JPEG).
+  var BUILTIN_DOG = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAQCAwMDAgQDAwMEBAQEBQkGBQUFBQsICAYJDQsNDQ0LDAwOEBQRDg8TDwwMEhgSExUWFxcXDhEZGxkWGhQWFxb/2wBDAQQEBAUFBQoGBgoWDwwPFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhb/wAARCABUAFQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5r1TW7HXNEkn1Sx3XDQCNEgbahcDh3B69OcdfrXWfs3eItJ0TxRYLe+GJtVaOSP7BLFdGDDBiNsjKMkc8/THSuD8O+Gta1by9N0rSry41Jpwv2eI/MRyenvj6cV2PwF0b7N4q+z3mi3Wo219di2tNuqfYQJjkbXJVipJZcZGOPevn5e7Qko6tapf8OenioNVnLduzPrQ/E+18QWNxM/hq2iiukjsYbW1tpXlVVYqIJJFwSp+ZSAcYcAitXx14eFz4r8Oa1HqkZe0hZHtPJRDZAIu5gM7FKuNmD93cM815ZpkthpFmscsY0e+s+IYI795Jkk3YBUpGu6VXAJB5OB0rttQ13TU1g32ra3f6dLawzC3ivI4EmugxUTNgnYGbJJGeoJPNfGYz2k6qnyty11620vb1+aMpJO1lY9AvDpeqaVL4gttUvpX0h3Pn2lwNiqFZ2Khj8zIcknpnjmvjS6sri51aTVpFdo3uHkdGXcJM89fdtuTXsnx1+IGj6R4DvtB8L6u8l7qu0zNCqgJDvbzFIjG0MzICcfwuB06+C6hq11FpCOgmP2gP85yqbcLgD1+noRXsZJgqmGhOpy2cn17Lr87jcuWLLtvJbW5i8ufeIgit7MGBDbfTIIql4jjjhaWVrZpN0pYy5zs+mPqayrS8tLjSQWhVZpJmOZVIyv8AslfmzwcCr+jXP2zRlW3LOEQNuc7iAwYkMO+PWvoKMpXaZjCVyNjBb6NbQs8m8SO4iI7jGDntwR+Vd18P9a1zVNNuNFimmjtNSYfarv7J5ggwp2s+eWxnrXF6zavbWMM+1Ea4d2wrkgJ8oViO3Q19HfAvwh4K8V/CW11O11LUrWZ3lS40uC5Z4o5VUAqf49jMA57fNgV5uayjTgqr2G4cz3Pl3xF4Z1I6zP5Gq20Sq23/AF3lhiOCQPQnNFfbnh74Z+BtP0W1t9YsoZdQMSyXLSwPIQ7DcRuHBAz2orwv7alHT2f4ov2E/L7yLQfhX8OvAV5p+ueH9WuYdT02Ax3M4ui5uwQQRICSAMkE444r5s+MPxz1vwz8bmh8EaB4dS6hbynlNos3nOcMcsG5APIJVSo46CsX40eN7zwx4dmsLW4K30o2Exycqrckk+p6Z9q8L8FTLb2ut69cTA3KwlEkzkhnODj8M8+lfTZTlNRuVfFz5+bozndabXY774qfFvxD4k8QXF2ssNr5kzveC1LCOSVjljknONwz7V6X8QvCXgXw/wDBDRfHVt40vNQvNaTMbX0ZeQSjBaJQCQoUDGT9e9fKKalOJgW+ZC2SD3HSut8VeILmb4W6bpqPObZL2cxgsfLQske4D34/WvpaNKlSVoRsZO7Em8T+ZK4juJGxKfKETMF+vXJ/Grfh3x/daTdTQahAdRsJgxmguGIZSVxuRu2Dg9O1edRyMhyrFT7Vq2EUt3CZPmYjuvX8jTlGNRWkg2Pc/But+DtYWOHU0u7Ni6SQGF1dc/iAQfevVbDwN4TkhmudE1GWSWVCyIc9153+p5PAr5O8FyZxCxxJayYU98fSvSfCvjvUtEv9qTSGFlAlRWIyP7y/1FeLj8rlKLeHm0+3Rj5W1oz2CTwRBISBfWqRyMFchjleecg8gda9O+GmhQeG4Zv+Ea8S/YEvLcCYxyKq3W0nA2nkEFicjk5PQV4vpmq/2zpyPYan9qkk+9tk+aPvhlPOav215qtukiEXDKxXeqLwBjpx9OlfK4mhXnHklJryZkp2dj32Ke9ijFvfeJb+eSEbAxY9OoAwMY5orxKDxB4hFvGINMN2u3/WGZVx7YNFed/Zddj9oz5Z+IGq3Or6hNc3Lk/aLhpcdlB+6o+gx+VaPiC30XS9DsbJ1kktzGslw0OFaVmGdqg9/wA8YzWP46txaeVC38JDMFPVSOP616n8GPhiPiD/AGDdNFNNGuxrl34jESkhgM8Dpj1OK/U42jBJbHRy3lZHj0+hW11JNdaXMz2aEnyt+6RBjOCcc/XFbWv6LrX/AArPSIVtJ2sbO5uZpFVTnc/l/MR/ur97pxivbPHVh4O8KavdW2mWmm6HpcL/AL64mhedkI4A7sxyDjHr1rl774rSySLHYapDfwW8IBjRGjZIxxj5h83arTVtiZQszy7RvBl1fxXd5AkUtrptubiYBz8yhgu3IHJyw6dgaz9WtIraUT6fL5cWQN8TPs3Ht84BB46H86+xvAfjG11rwKmm6v4ba3iuE8uFkJiDqeMKEQ7sHqTn3Irwz47fCbxT4Zhm1W10NZfDLSeYt9ZXCXMaEn/lpt5U9skUk03sEoWVzyq3vTa6tHdkFPNT5+eDjjtXRXlxvhFwhy6YYe47iuavLIi3j2jPlt8pH909quafcF4ijE/KSMH27VVibm9p+sTafqEN1azPC+cpIp/Q19HfAC8ufHOmXFsNRazmAVJIFBP2lieNg6EgE8HGMZzxXypcb2tdi43KeAe4r039lXxZf6D8SLQxunkSEeekzfKApzuPqVxuHrgj1rys4wjrYWUofGthNXPpG88K+JdNk/s2Lwro979lzG1zcXETySnJJLZb5Tzjb2xRXqOixeHrnSLe5l8U2dnNMpklM1wiG4ZmJ84KcEBwQcEUV+bSz6tGTSoSsvId5HwH8UtC3N56xFYxCsKqzcsyqGxx3wRX2V+xp4e1TS/2b9NvSA8uqW6vb20MedyFmwxYAkk9ABnpn6fKPxYvJbbSfLa6hOxixMik+XkcAccnk5NfaP7NPjHS9O+BfhPS7eKaS7n8OQXc87gIEiwV5x0HynAHJB9zX6pUnaCZ1UY3mzg/if8ADDSR8P8AUdJ1KGNr67drmS8njW4RZFJ2AKwyVA3D5SOe9eB/Bn4b+FrzXVg1rVZrm480uPKscLGrPhWdxkqpPVQO59q9m8W/ELV/GvxBt/D1vdNYWUySmdmCFokT7u4EcZJB6Z5wMVzum/BXxBo2lzazY+Lbi3+03bN8kKhSzcEsvO4YA4J4zxVU5c0R1IpS1RPZ203h/UvsmrA3OgvMsEkZuEJtJj9yZFGOgHJXkr64rnfiRqV/pcfiXwnc3jTRzwsXhkd4bhGPIkRj8suQQeD0J9RXn3ivxRew3154f1O3WS+090SRhwtxCrEK4H94evo2O1Zlr4i/tjXLNJLk+RpjRyKJmJPlKpymck5ztUe2M9KqPczk+hwEhYWdxFIRs2FkbHcf1pmnssyCbG3K5P1Fanxml0+18YahZaS4aCSffkJtwPQj1znp6e9c5pF4IJCrgGNuozjFbRlc52aULCXcgPO7B9j/AIV6F8HtNiuZJDOCkqkESKeV6/5+o964Lw7oOqa1qi2+l27yfOAHUcAe56V9DeCPCsOhaXJFdyxm6eIiTYVJB6dj6nrmvPzDFRpw5b6gpJNHaaHaW+oWImvtXt/OjxG2YWY/KoHJUEUVkr4eRY1WPV5G+Ubwrbdh/unnk9ORRXzzpyvsXyLqjL1rwnouuSSWmo2q3n74NGkrFEUgfddgdwzkDOO9b3wrtrLw9cXFjolrFpkN9blZYUlkkhbYceZ82dpByBjsTnrTlt4GmaVmM0TShURY/vN13ZPLDOT7VLJcX9x5aQNAbUwypPvBXleQBjp05z+tYPEVbKzenmOM3HYqaD4TaDxpf65G73C2a+ZqAZeNuRsYEcH5gPw9a9Gl8WRaV8LLrT74eXcRykrHjczFkGWDe1dV+zrY2kXwV1JL1VMmtXE0UcTdRHGCuVP8RyW9uOK8v8dDUvtC266adQtAqQWzFceaTkfNjgkYr6DDxm6cXezZtGcnFKWp4P8AEDRbXxD4wF9ppuHuVkVU2REqqlRkSHsMgnP1rA8U/DLXtIjOsWt7FdxrE80gijK+So5IYfxEnsOMflX1tL8INR8E3SXF41vJNcbWligX5YnOCFLY61f1jw1cJ4XuLW2SL+0dQV0jIGdo4Ax+f9a9GjTaWrM60tT88rm01TVtXdn8y5vJ3Aw3MkrnACgdSTxxX2t+zT8KPh/4I8C2Z8ceGdM1nxNIpu53u7TzhaKxwsIUnBYDnkevbFbPwE+EmjeBbiTWJha6lrzFgl6w3eSnTCIfuvnPzda9Z0vwqNVWOSdBbxSEtJc5G78B1JPqeK1nTelkcbqptqO58/fGHStK0fxCsnhHSoNL027f/jytrYxokrKSvTj5gCQvbr3rm3GoI1sXP7maRZT5oBxxkhGH8OP8ivoj4lfADS9VVtV8Fane6JrAiEbs928kN4gbeA4Jyp387hxyQRg18/fEHTtem0TV9eiE9nr3hW9Fn4m08MMNC4zFchF+UEYKEoBuUqeSDnzMTlkqknKL1DRWuaGjXERtXSNzBHFNJGkYxgAMRxuHTOenFFcdL8SPAyrEH8O67dnyl/fRXKhW45xt98+9Fc8csnZXjr6nUpQsdXqV9cJG15C3kvEg2rFwnzPg8f56CoNF1rUJ7x5JJQy2sqwRx7fl2EMxyO5yByfSiivEklZkn054Bum0/wCEtm1vFEDGC3zLnccscn6kmq/wdji1SxKXkSMqXtu6qF6HcRge1FFfVUtcPD0X5GsD0L4yThIZHeCGXzJdjLIuQRg+lfO8fi3VZbpWVYIjFcP5flqfkA7DJPHAoorpomFfY6f4Rx/bdSuGndvkAmAXAG5txP4ZANes6STI8bMeWjDH247UUV3/AGTlp7M6C1RQp9lryH40+GNGufiRNHJagf8ACV+E9RstWKfKZ44QjRHj+JDI2G6/lRRWb2Cex+dfhGztdQ0GG5uoFaUkhmUld2DjJweT70UUVmdB/9k=";
+  var DEFAULT_NOTE = "В игре бежит настоящая ши-тцу — её морда вшита в страницу и видна у всех, кто откроет ссылку. Кнопка «Фото собаки» подставит вместо неё чью-то другую, только в этом браузере.";
+
+  var cv = document.getElementById("screen");
+  var ctx = cv.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
+  // на тач-устройстве подсказка про пробел бессмысленна
+  var TAP = ((navigator.maxTouchPoints || 0) > 0 || (window.matchMedia && window.matchMedia("(hover: none)").matches)) ? "ТАП" : "ПРОБЕЛ";
+
+  var W = 320, H = 180;
+  var GROUND = 148;          // верх травы
+  var DOG_X = 44;
+  var HEAD = 30;             // сторона спрайта морды, вырезанного из фото
+  var MAX_GROWTH = 4;        // ступеней роста от съеденного
+
+  // --- палитра (NES-ish) ---
+  var C = {
+    sky:    "#6BB6FF",
+    sky2:   "#9AD3FF",
+    sun:    "#FFE066",
+    hill:   "#3E8948",
+    hill2:  "#2F6B38",
+    tree:   "#245B2E",
+    trunk:  "#5A3A22",
+    grass:  "#4FA845",
+    grass2: "#3C8A36",
+    dirt:   "#8F563B",
+    dirt2:  "#6E402B",
+    fur:    "#F0EEE6",   // белая шерсть
+    fur2:   "#CBC8BE",   // её тень
+    spot:   "#6E6B72",   // крап на боках
+    coal:   "#1F1E24",   // чёрная шерсть крупа и головы
+    coal2:  "#3A3842",
+    harn:   "#8FA893",   // шлейка
+    harn2:  "#6E8872",
+    dark:   "#14131A",
+    bone:   "#FFF6DC",
+    water:  "#4FA0E8",
+    water2: "#2E76C4",
+    rock:   "#9A9AA8",
+    rock2:  "#6E6E80",
+    wood:   "#B4792F",
+    wood2:  "#8A5A1F",
+    metal:  "#7F8C99",
+    metal2: "#5A6674",
+    white:  "#FCFCFC",
+    black:  "#101018",
+    red:    "#E4453A",
+    accent: "#FFD23F"
+  };
+
+  // --- состояние ---
+  var state = "title";        // title | play | pause | over
+  var dist = 0, score = 0, scoreBonus = 0, best = 0, lives = 3, combo = 0, caught = 0;
+  var growth = 0;            // ступени роста: чем больше съела, тем крупнее собака
+  var speed = 3, invuln = 0, shakeT = 0;
+  var dogY = GROUND, vy = 0, onGround = true, jumpHeld = false, fastFall = false;
+  var coyote = 0, buffer = 0, runFrame = 0, tick = 0;
+  var obstacles = [], treats = [], parts = [], pops = [];
+  var nextObs = 60, nextTreat = 110;
+  var scroll = 0, muted = false, photoData = null, head = null;
+
+  // ключ фото версионирован: спрайты, нарезанные прежними версиями, к новому размеру
+  // головы не подходят и при повторной обработке превращались в чёрное пятно
+  var PHOTO_KEY = "bone-photo-v2";
+
+  try {
+    best = parseInt(localStorage.getItem("bone-best") || "0", 10) || 0;
+    muted = localStorage.getItem("bone-muted") === "1";
+    photoData = localStorage.getItem(PHOTO_KEY);
+    localStorage.removeItem("bone-photo");
+  } catch (e) { /* приватный режим — играем без сохранений */ }
+
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // --- звук ---
+  var actx = null, musicTimer = null, mStep = 0;
+
+  function audio() {
+    if (!actx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      actx = new AC();
+    }
+    if (actx.state === "suspended") actx.resume();
+    return actx;
+  }
+
+  function blip(freq, dur, type, vol, slide) {
+    if (muted) return;
+    var a = audio();
+    if (!a) return;
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, a.currentTime);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq + slide), a.currentTime + dur);
+    g.gain.setValueAtTime(vol || 0.05, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0008, a.currentTime + dur);
+    o.connect(g); g.connect(a.destination);
+    o.start(); o.stop(a.currentTime + dur + 0.02);
+  }
+
+  function sfxJump()  { blip(330, 0.12, "square", 0.05, 280); }
+  function sfxCatch() { blip(660, 0.07, "square", 0.05); setTimeout(function () { blip(880, 0.09, "square", 0.05); }, 60); }
+  function sfxHit()   { blip(180, 0.3, "sawtooth", 0.07, -130); }
+  function sfxSplash(){ blip(240, 0.18, "triangle", 0.05, -120); }
+  function sfxOver()  { [392, 330, 262, 196].forEach(function (f, i) { setTimeout(function () { blip(f, 0.22, "square", 0.05); }, i * 130); }); }
+  function sfxGrow()  { blip(392, 0.1, "triangle", 0.06, 260); setTimeout(function () { blip(784, 0.12, "triangle", 0.05); }, 80); }
+  function sfxShrink(){ blip(300, 0.22, "triangle", 0.05, -180); }
+
+  var LEAD = [523, 0, 392, 440, 523, 0, 659, 0, 587, 0, 440, 494, 523, 0, 392, 0];
+  var BASS = [131, 0, 131, 0, 175, 0, 175, 0, 196, 0, 196, 0, 175, 0, 165, 0];
+
+  function startMusic() {
+    stopMusic();
+    if (muted) return;
+    mStep = 0;
+    musicTimer = setInterval(function () {
+      var l = LEAD[mStep % LEAD.length], b = BASS[mStep % BASS.length];
+      if (l) blip(l, 0.1, "square", 0.022);
+      if (b) blip(b, 0.16, "triangle", 0.03);
+      mStep++;
+    }, 135);
+  }
+
+  function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
+
+  // --- фото собаки -> спрайт морды ---
+  // пять уровней на канал: плоские заливки читаются чётче, чем мягкий градиент
+  function quantize(v) { return Math.min(255, Math.round(v / 64) * 64); }
+
+  // рамка кадра: за её пределами фото не берём вообще
+  function inHead(x, y) {
+    var m = (HEAD - 1) / 2, rr = (HEAD / 2 - 0.6) * (HEAD / 2 - 0.6);
+    var dx = x - m, dy = y - m;
+    return dx * dx + dy * dy <= rr;
+  }
+
+  // трава и листва вокруг головы: зелёный выше остальных каналов, в том числе
+  // жёлто-зелёная подсвеченная солнцем — шерсть собаки почти нейтральная и не задевается
+  function isBackdrop(r, g, b) {
+    if (g - Math.max(r, b) > 3) return true;
+    return g >= r - 10 && g > b + 24 && g > 70;
+  }
+
+  function buildHead(img) {
+    var box = HEAD + 2;                          // рамка под контур в один пиксель
+    var c = document.createElement("canvas");
+    c.width = box; c.height = box;
+    var g = c.getContext("2d");
+    var s = Math.min(img.width, img.height);
+    // квадратный снимок уже кадрирован по морде; вертикальный кропим выше центра
+    var oy = (img.width === img.height) ? 0 : (img.height - s) * 0.32;
+    g.drawImage(img, (img.width - s) / 2, oy, s, s, 1, 1, HEAD, HEAD);
+
+    var d = g.getImageData(0, 0, box, box), p = d.data;
+    var orig = new Uint8ClampedArray(p);         // резкость и вырезка считаются по исходнику
+    var inside = new Uint8Array(box * box), x, y, i, n, k, v;
+
+    for (y = 0; y < box; y++) {
+      for (x = 0; x < box; x++) {
+        i = y * box + x;
+        var keep = x >= 1 && y >= 1 && x <= HEAD && y <= HEAD && inHead(x - 1, y - 1) &&
+                   orig[i * 4 + 3] > 128 &&     // прозрачное — фон, а не чёрная шерсть
+                   !isBackdrop(orig[i * 4], orig[i * 4 + 1], orig[i * 4 + 2]);
+        if (!keep) { p[i * 4 + 3] = 0; continue; }
+        inside[i] = 1;
+        for (k = 0; k < 3; k++) {
+          v = orig[i * 4 + k];
+          // нерезкое маскирование: уменьшение фото размывает черты, тут они возвращаются
+          if (x > 0 && y > 0 && x < box - 1 && y < box - 1) {
+            var around = (orig[(i - 1) * 4 + k] + orig[(i + 1) * 4 + k] +
+                          orig[(i - box) * 4 + k] + orig[(i + box) * 4 + k]) / 4;
+            v = v + (v - around) * 0.55;
+          }
+          // контраст + подсветка: чёрная морда иначе слипается в одно пятно
+          v = (v - 118) * 1.45 + 128 + 22;
+          p[i * 4 + k] = quantize(Math.max(0, Math.min(255, v)));
+        }
+        p[i * 4 + 3] = 255;
+      }
+    }
+
+    // одинокие пиксели по краю вырезки только мусорят силуэт
+    var cleaned = new Uint8Array(inside);
+    for (y = 1; y < box - 1; y++) {
+      for (x = 1; x < box - 1; x++) {
+        i = y * box + x;
+        if (!inside[i]) continue;
+        n = inside[i - 1] + inside[i + 1] + inside[i - box] + inside[i + box];
+        if (n <= 1) { cleaned[i] = 0; p[i * 4 + 3] = 0; }
+      }
+    }
+    inside = cleaned;
+
+    // от центра морды разливаем заливку: всё, что с ней не связано, было фоном
+    var keepMask = new Uint8Array(box * box);
+    var stack = [Math.round(box / 2) * box + Math.round(box / 2)];
+    while (stack.length) {
+      var q = stack.pop();
+      if (q < 0 || q >= box * box || keepMask[q] || !inside[q]) continue;
+      keepMask[q] = 1;
+      var qx = q % box;
+      if (qx > 0) stack.push(q - 1);
+      if (qx < box - 1) stack.push(q + 1);
+      stack.push(q - box);
+      stack.push(q + box);
+    }
+    var kept = 0;
+    for (i = 0; i < box * box; i++) {
+      if (inside[i] && !keepMask[i]) p[i * 4 + 3] = 0;
+      if (keepMask[i]) kept++;
+    }
+    inside = keepMask;
+
+    // вырезка съела почти всё — фото не годится, рисуем запасную морду
+    if (kept < HEAD * HEAD * 0.25) return null;
+
+    // светлая окантовка по силуэту — иначе тёмная голова тонет в зелени парка
+    for (y = 0; y < box; y++) {
+      for (x = 0; x < box; x++) {
+        i = y * box + x;
+        if (inside[i]) continue;
+        n = (x > 0 && inside[i - 1]) || (x < box - 1 && inside[i + 1]) ||
+            (y > 0 && inside[i - box]) || (y < box - 1 && inside[i + box]);
+        if (!n) continue;
+        p[i * 4] = 203; p[i * 4 + 1] = 200; p[i * 4 + 2] = 190; p[i * 4 + 3] = 255;
+      }
+    }
+
+    g.putImageData(d, 0, 0);
+    return c;
+  }
+
+  function applyPhoto(dataUrl, persist) {
+    var img = new Image();
+    img.onerror = function () {
+      head = null;                               // останется нарисованная морда
+      if (state === "title") draw();
+    };
+    img.onload = function () {
+      head = buildHead(img);
+      if (!head) {
+        document.getElementById("photo-note").textContent =
+          "На этом снимке не нашлось морды — собака бежит с нарисованной. Попробуй кадр крупнее и без зелени вокруг головы.";
+        if (state === "title") draw();
+        return;
+      }
+      if (persist) {
+        var out = head.toDataURL ? head.toDataURL("image/png") : dataUrl;
+        photoData = out;
+        save(PHOTO_KEY, out);
+        document.getElementById("btn-clear").hidden = false;
+        document.getElementById("photo-note").textContent = "Твоя морда в игре. «Вернуть Шитцу» откатит спрайт к собаке по умолчанию.";
+      }
+      if (state === "title") draw();
+    };
+    img.src = dataUrl;
+  }
+
+  applyPhoto(photoData || BUILTIN_DOG, false);
+
+  // --- рисование ---
+  function px(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(x | 0, y | 0, w | 0, h | 0); }
+
+  function drawSky() {
+    px(0, 0, W, H, C.sky);
+    px(0, 96, W, 20, C.sky2);
+    // солнце
+    px(262, 18, 20, 20, C.sun);
+    px(258, 22, 28, 12, C.sun);
+    px(266, 14, 12, 28, C.sun);
+  }
+
+  function drawClouds() {
+    var off = (scroll * 0.18) % 420;
+    var cl = [[20, 26], [150, 16], [300, 34], [400, 22]];
+    for (var i = 0; i < cl.length; i++) {
+      var x = Math.round(cl[i][0] - off);
+      if (x < -60) x += 420;
+      if (x > W + 60) continue;
+      var y = cl[i][1];
+      px(x, y, 26, 7, C.white);
+      px(x + 5, y - 5, 16, 6, C.white);
+      px(x + 13, y - 8, 10, 5, C.white);
+    }
+  }
+
+  function drawHills() {
+    // дальние холмы заполняют всё до земли — иначе деревья повисают над полосой неба
+    px(0, 112, W, GROUND - 112, C.hill2);
+    var off = (scroll * 0.35) % 96;
+    for (var i = -1; i < W / 96 + 1; i++) {
+      var x = Math.round(i * 96 - off);
+      px(x + 8, 106, 80, 8, C.hill2);
+      px(x + 22, 100, 52, 8, C.hill2);
+      px(x + 38, 96, 24, 6, C.hill2);
+    }
+  }
+
+  function drawTrees() {
+    var off = (scroll * 0.62) % 72;
+    for (var i = -1; i < W / 72 + 1; i++) {
+      var x = Math.round(i * 72 - off);
+      px(x + 10, 130, 4, 14, C.trunk);
+      px(x + 2, 114, 20, 18, C.tree);
+      px(x + 6, 108, 12, 8, C.tree);
+      px(x + 46, 134, 3, 10, C.trunk);
+      px(x + 40, 122, 15, 14, C.tree);
+    }
+  }
+
+  function drawBushes() {
+    // ближний ряд кустов прячет стык деревьев с землёй
+    var off = Math.round(scroll * 0.9) % 58;
+    for (var i = -1; i < W / 58 + 1; i++) {
+      var x = i * 58 - off;
+      px(x + 4, GROUND - 9, 18, 9, C.hill);
+      px(x + 8, GROUND - 12, 10, 4, C.hill);
+      px(x + 7, GROUND - 10, 4, 2, C.grass);
+      px(x + 34, GROUND - 6, 13, 6, C.hill);
+      px(x + 38, GROUND - 8, 6, 3, C.hill);
+    }
+  }
+
+  function drawGround() {
+    px(0, GROUND, W, 4, C.grass);
+    px(0, GROUND + 4, W, H - GROUND - 4, C.dirt);
+    var off = Math.round(scroll) % 16;
+    for (var x = -off; x < W; x += 16) {
+      px(x, GROUND + 2, 6, 2, C.grass2);
+      px(x + 4, GROUND + 9, 3, 2, C.dirt2);
+      px(x + 11, GROUND + 15, 4, 2, C.dirt2);
+      px(x + 2, GROUND + 22, 5, 2, C.dirt2);
+    }
+  }
+
+  // запасная морда, если фото не загрузилось: чёрная голова с белой проточиной
+  function drawDefaultHead(x, y) {
+    px(x + 4, y + 1, 20, 25, C.coal);
+    px(x + 1, y + 6, 26, 16, C.coal);
+    px(x + 12, y, 5, 10, C.fur);                 // проточина на лбу
+    px(x + 6, y + 11, 3, 3, C.black);            // глаза
+    px(x + 19, y + 11, 3, 3, C.black);
+    px(x + 7, y + 17, 14, 8, C.fur2);            // седая борода
+    px(x + 11, y + 16, 6, 4, C.black);           // нос
+    px(x + 10, y + 23, 8, 2, C.fur);
+  }
+
+  function drawDog(x, y, frame, air, hurt) {
+    if (hurt && (tick >> 1) % 2 === 0) return;   // мигание при неуязвимости
+    var bob = air ? 0 : (frame === 1 || frame === 3 ? 1 : 0);
+    var b = y - 8 + bob;                         // низ корпуса, под ним лапы
+    var f = frame % 4;
+
+    // хвост-метёлка, белый и задранный вверх
+    px(x + 1, b - 29, 5, 9, C.fur);
+    px(x + 3, b - 36, 6, 9, C.fur);
+    px(x + 7, b - 41, 7, 7, C.fur);
+    px(x + 5, b - 37, 3, 3, C.fur2);
+    px(x + 12, b - 43, 4, 4, C.fur);
+
+    // лапы
+    if (air) {
+      px(x + 7, b, 6, 6, C.fur);
+      px(x + 17, b + 2, 6, 4, C.fur);
+      px(x + 27, b, 6, 6, C.fur);
+      px(x + 36, b - 1, 6, 6, C.fur);
+      px(x + 8, b + 4, 4, 2, C.fur2);
+      px(x + 37, b + 3, 4, 2, C.fur2);
+    } else {
+      var a = (f === 0 || f === 1) ? 0 : 4;
+      var c2 = (f === 0 || f === 1) ? 4 : 0;
+      px(x + 8 - a, b, 6, 8, C.fur);
+      px(x + 18 + a, b, 6, 8, C.fur);
+      px(x + 28 - c2, b, 6, 8, C.fur);
+      px(x + 37 + c2, b, 6, 8, C.fur);
+      px(x + 8 - a, b + 6, 6, 2, C.fur2);
+      px(x + 28 - c2, b + 6, 6, 2, C.fur2);
+    }
+
+    // корпус: белый с крапом, чёрный круп
+    px(x + 4, b - 25, 40, 25, C.fur);
+    px(x + 2, b - 20, 44, 18, C.fur);
+    px(x + 2, b - 25, 16, 25, C.coal);           // чёрный зад
+    px(x + 16, b - 25, 5, 12, C.coal2);
+    px(x + 6, b - 4, 9, 4, C.fur);               // белая штанина
+    px(x + 23, b - 14, 3, 3, C.spot);            // крап на боку
+    px(x + 29, b - 8, 2, 2, C.spot);
+    px(x + 26, b - 20, 2, 2, C.spot);
+    px(x + 36, b - 15, 3, 2, C.spot);
+    px(x + 31, b - 21, 2, 2, C.spot);
+    px(x + 20, b - 6, 2, 2, C.spot);
+    px(x + 10, b - 2, 7, 2, C.fur2);             // тень под брюхом
+    px(x + 25, b - 2, 10, 2, C.fur2);
+
+    // шлейка
+    px(x + 35, b - 26, 4, 18, C.harn);
+    px(x + 27, b - 16, 16, 4, C.harn);
+    px(x + 27, b - 14, 16, 2, C.harn2);
+    px(x + 35, b - 26, 4, 2, C.harn2);
+
+    // морда из фото
+    var hx = x + 21, hy = b - 46;
+    px(hx + 7, hy + 22, HEAD - 12, 12, C.coal);  // шея, чтобы голова не висела отдельно
+    if (head) {
+      ctx.drawImage(head, hx, hy);
+    } else {
+      drawDefaultHead(hx + 1, hy + 1);
+    }
+  }
+
+  // Собака рисуется в свой спрайт-лист и растягивается целыми пикселями:
+  // при масштабировании самого контекста пиксель-арт расползается.
+  var dogCv = document.createElement("canvas");
+  dogCv.width = 80; dogCv.height = 80;
+  var dogCtx = dogCv.getContext("2d");
+  dogCtx.imageSmoothingEnabled = false;
+  var DOG_OX = 10, DOG_OY = 64;                  // где внутри спрайта стоят лапы
+
+  function dogScale() { return 1 + growth * 0.09; }
+  function dogHeight() { return 54 * dogScale(); }   // от лап до макушки
+  // крупная собака прыгает выше и дольше парит: рост — награда, а не гиря
+  function gravityNow() { return 0.55 * (1 - 0.03 * growth); }
+
+  function drawDogScaled(frame, air, hurt) {
+    dogCtx.clearRect(0, 0, 80, 80);
+    var main = ctx;
+    ctx = dogCtx;                                // px() и drawImage уходят в спрайт
+    drawDog(DOG_OX, DOG_OY, frame, air, hurt);
+    ctx = main;
+    var s = dogScale();
+    ctx.drawImage(dogCv, 0, 0, 80, 80,
+      Math.round(DOG_X - DOG_OX * s), Math.round(dogY - DOG_OY * s),
+      Math.round(80 * s), Math.round(80 * s));
+  }
+
+  function drawBone(x, y, s) {
+    s = s || 1;
+    var u = function (dx, dy, w, h, c) {
+      px(x + dx * s, y + dy * s, Math.max(1, Math.round(w * s)), Math.max(1, Math.round(h * s)), c);
+    };
+    u(0, 0, 3, 3, C.bone); u(0, 4, 3, 3, C.bone);
+    u(2, 2, 6, 3, C.bone);
+    u(7, 0, 3, 3, C.bone); u(7, 4, 3, 3, C.bone);
+    u(1, 1, 1, 1, C.white);
+  }
+
+  function drawObstacle(o) {
+    var x = Math.round(o.x);
+    if (o.type === "fence") {
+      px(x, GROUND - 30, 4, 30, C.wood);
+      px(x + 12, GROUND - 30, 4, 30, C.wood);
+      px(x - 3, GROUND - 25, 22, 4, C.wood2);
+      px(x - 3, GROUND - 14, 22, 4, C.wood2);
+      px(x, GROUND - 33, 4, 4, C.wood2);
+      px(x + 12, GROUND - 33, 4, 4, C.wood2);
+    } else if (o.type === "rock") {
+      px(x + 3, GROUND - 18, 13, 18, C.rock);
+      px(x, GROUND - 11, 19, 11, C.rock);
+      px(x + 6, GROUND - 21, 7, 4, C.rock);
+      px(x + 4, GROUND - 15, 4, 4, C.rock2);
+      px(x + 11, GROUND - 8, 5, 4, C.rock2);
+      px(x + 1, GROUND - 4, 4, 3, C.rock2);
+    } else if (o.type === "bin") {
+      px(x, GROUND - 25, 21, 25, C.metal);
+      px(x - 2, GROUND - 30, 25, 5, C.metal2);
+      px(x + 8, GROUND - 34, 5, 4, C.metal2);
+      px(x + 4, GROUND - 21, 3, 18, C.metal2);
+      px(x + 13, GROUND - 21, 3, 18, C.metal2);
+    } else {                                   // лужа
+      px(x, GROUND - 1, o.w, 6, C.water2);
+      px(x + 2, GROUND - 4, o.w - 4, 5, C.water);
+      px(x + 6, GROUND - 3, 6, 1, C.white);
+      px(x + o.w - 13, GROUND, 7, 1, C.white);
+    }
+  }
+
+  function drawTreat(t) {
+    var x = Math.round(t.x), y = Math.round(t.y);
+    if (t.kind === "bone") {
+      drawBone(x, y + 1, 1.5);
+    } else if (t.kind === "sausage") {
+      px(x, y + 2, 16, 7, C.accent);
+      px(x + 2, y, 13, 3, "#FF9A3C");
+      px(x + 3, y + 3, 4, 2, C.white);
+    } else {
+      px(x, y + 4, 19, 8, C.red);              // миска
+      px(x + 3, y, 13, 5, "#C08A4A");
+      px(x + 1, y + 10, 17, 2, "#9A2E26");
+      px(x + 5, y + 1, 4, 2, "#E0B070");
+    }
+  }
+
+  function drawHUD() {
+    ctx.font = '8px "Press Start 2P", monospace';
+    ctx.textBaseline = "top";
+    ctx.fillStyle = C.black;
+    ctx.fillText(String(score), 9, 9);
+    ctx.fillStyle = C.white;
+    ctx.fillText(String(score), 8, 8);
+
+    var rec = "РЕКОРД " + best;
+    ctx.textAlign = "right";
+    ctx.fillStyle = C.black;
+    ctx.fillText(rec, W - 7, 9);
+    ctx.fillStyle = C.accent;
+    ctx.fillText(rec, W - 8, 8);
+    ctx.textAlign = "left";
+
+    for (var i = 0; i < 3; i++) {
+      if (i < lives) drawBone(8 + i * 13, 22);
+      else { px(8 + i * 13, 22, 10, 7, "#00000033"); }
+    }
+
+    if (combo >= 5) {
+      var mult = Math.min(4, 1 + Math.floor(combo / 5));
+      var txt = "x" + mult;
+      ctx.textAlign = "center";
+      ctx.fillStyle = C.black;
+      ctx.fillText(txt, W / 2 + 1, 9);
+      ctx.fillStyle = C.accent;
+      ctx.fillText(txt, W / 2, 8);
+      ctx.textAlign = "left";
+    }
+  }
+
+  // панель держится в верхней половине экрана, чтобы не закрывать собаку
+  function centerText(lines) {
+    px(24, 20, W - 48, 76, "#101018CC");
+    px(24, 20, W - 48, 2, C.accent);
+    px(24, 94, W - 48, 2, C.accent);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i];
+      ctx.font = l.big ? '12px "Press Start 2P", monospace' : '8px "Press Start 2P", monospace';
+      ctx.fillStyle = C.black;
+      ctx.fillText(l.t, W / 2 + 1, l.y + 1);
+      ctx.fillStyle = l.c || C.white;
+      ctx.fillText(l.t, W / 2, l.y);
+    }
+    ctx.textAlign = "left";
+  }
+
+  function draw() {
+    ctx.save();
+    if (shakeT > 0) ctx.translate((Math.random() * 4 - 2) | 0, (Math.random() * 3 - 1) | 0);
+
+    drawSky();
+    drawClouds();
+    drawHills();
+    drawTrees();
+    drawBushes();
+    drawGround();
+
+    for (var i = 0; i < obstacles.length; i++) drawObstacle(obstacles[i]);
+    for (var j = 0; j < treats.length; j++) drawTreat(treats[j]);
+
+    for (var p = 0; p < parts.length; p++) {
+      var q = parts[p];
+      px(q.x, q.y, q.s, q.s, q.c);
+    }
+
+    drawDogScaled(runFrame, !onGround, invuln > 0 && state === "play");
+
+    ctx.font = '8px "Press Start 2P", monospace';
+    ctx.textAlign = "center";
+    for (var k = 0; k < pops.length; k++) {
+      var po = pops[k];
+      ctx.fillStyle = C.black;
+      ctx.fillText(po.t, po.x + 1, po.y + 1);
+      ctx.fillStyle = po.c;
+      ctx.fillText(po.t, po.x, po.y);
+    }
+    ctx.textAlign = "left";
+
+    drawHUD();
+
+    if (state === "title") {
+      centerText([
+        { t: "КОСТОЧКОВЫЙ", y: 30, big: true, c: C.accent },
+        { t: "ЗАБЕГ", y: 48, big: true, c: C.accent },
+        { t: TAP + " — ПРЫЖОК И СТАРТ", y: 74 }
+      ]);
+    } else if (state === "pause") {
+      centerText([
+        { t: "ПАУЗА", y: 40, big: true, c: C.accent },
+        { t: "P — ПРОДОЛЖИТЬ", y: 70 }
+      ]);
+    } else if (state === "over") {
+      centerText([
+        { t: "СОБАКА УСТАЛА", y: 28, c: C.accent },
+        { t: String(score), y: 44, big: true },
+        { t: score >= best ? "НОВЫЙ РЕКОРД!" : "РЕКОРД " + best, y: 68, c: score >= best ? C.good : C.white },
+        { t: TAP + " — ЕЩЁ РАЗ", y: 80 }
+      ]);
+    }
+
+    ctx.restore();
+  }
+
+  // --- частицы ---
+  function dust(x, y, n, color) {
+    for (var i = 0; i < n; i++) {
+      parts.push({
+        x: x, y: y,
+        vx: -speed * 0.4 - Math.random() * 1.2,
+        vy: -Math.random() * 1.6,
+        life: 14 + Math.random() * 12,
+        s: Math.random() < 0.4 ? 2 : 1,
+        c: color || C.dirt2
+      });
+    }
+  }
+
+  function pop(t, x, y, c) { pops.push({ t: t, x: x, y: y, life: 34, c: c || C.accent }); }
+
+  // --- игровая логика ---
+  function reset() {
+    dist = 0; score = 0; scoreBonus = 0; lives = 3; combo = 0; caught = 0; growth = 0;
+    speed = 3; invuln = 0; shakeT = 0;
+    dogY = GROUND; vy = 0; onGround = true;
+    obstacles = []; treats = []; parts = []; pops = [];
+    nextObs = 70; nextTreat = 100;
+  }
+
+  function spawnObstacle() {
+    var r = Math.random(), o;
+    if (r < 0.34) o = { type: "fence", x: W + 8, w: 16, h: 30 };
+    else if (r < 0.58) o = { type: "rock", x: W + 8, w: 19, h: 21 };
+    else if (r < 0.76) o = { type: "bin", x: W + 8, w: 21, h: 30 };
+    else o = { type: "puddle", x: W + 8, w: 28 + Math.round(Math.random() * 18), h: 5 };
+    obstacles.push(o);
+    nextObs = Math.round((88 + Math.random() * 66) * (3 / speed));
+  }
+
+  function spawnTreat() {
+    // не бросать еду поверх близкого препятствия — иначе ловля и прыжок конфликтуют
+    for (var i = 0; i < obstacles.length; i++) {
+      if (obstacles[i].x > W - 50) { nextTreat = 25; return; }
+    }
+    var r = Math.random();
+    var kind = r < 0.68 ? "bone" : (r < 0.92 ? "sausage" : "bowl");
+    var startX = W + 10;
+    // высота в момент встречи с собакой: выше её роста, но в пределах прыжка
+    var targetY = 44 + Math.random() * 34;
+    var frames = (startX - DOG_X) / speed;
+    treats.push({
+      kind: kind, x: startX, y: -12,
+      vy: (targetY + 12) / frames,
+      value: kind === "bone" ? 10 : (kind === "sausage" ? 25 : 50)
+    });
+    nextTreat = Math.round((80 + Math.random() * 90) * (3 / speed));
+  }
+
+  // хитбокс чуть уже силуэта, но захватывает голову — иначе ловля косточек ощущается нечестной
+  function hitBox() {
+    var s = dogScale();
+    return { x: DOG_X + 8 * s, y: dogY - 50 * s, w: 38 * s, h: 50 * s };
+  }
+
+  function overlap(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  function takeHit() {
+    lives--;
+    combo = 0; caught = 0;
+    if (growth > 0) { growth = 0; sfxShrink(); }  // от удара собака сдувается обратно
+    invuln = 96;
+    shakeT = 12;
+    sfxHit();
+    dust(DOG_X + 20 * dogScale(), GROUND - 10, 12, C.red);
+    if (lives <= 0) gameOver();
+  }
+
+  function gameOver() {
+    state = "over";
+    stopMusic();
+    sfxOver();
+    if (score > best) { best = score; save("bone-best", String(best)); }
+    document.getElementById("btn-start").textContent = "Ещё раз";
+  }
+
+  function jump() {
+    if (state === "title" || state === "over") { startGame(); return; }
+    if (state === "pause") { state = "play"; startMusic(); return; }
+    buffer = 7;
+  }
+
+  function startGame() {
+    reset();
+    state = "play";
+    audio();
+    startMusic();
+    document.getElementById("btn-start").textContent = "Заново";
+  }
+
+  function update() {
+    tick++;
+    if (state !== "play") {
+      scroll += 0.35;                            // фон едет и на заставке
+      for (var z = parts.length - 1; z >= 0; z--) {
+        var pz = parts[z];
+        pz.x += pz.vx; pz.y += pz.vy; pz.vy += 0.12;
+        if (--pz.life <= 0) parts.splice(z, 1);
+      }
+      if (state === "title" || state === "pause") runFrame = (tick >> 2) % 4;
+      return;
+    }
+
+    dist += speed;
+    scroll += speed;
+    speed = 3 + Math.min(3.3, dist / 2800);
+    score = Math.floor(dist / 12) + scoreBonus;
+    if (shakeT > 0) shakeT--;
+    if (invuln > 0) invuln--;
+
+    // прыжок
+    if (onGround) { coyote = 6; runFrame = (tick >> 2) % 4; } else if (coyote > 0) coyote--;
+    if (buffer > 0) buffer--;
+    if (buffer > 0 && (onGround || coyote > 0)) {
+      vy = -8.4 * (1 + 0.02 * growth);
+      onGround = false; coyote = 0; buffer = 0;
+      sfxJump();
+      dust(DOG_X + 16 * dogScale(), GROUND - 2, 6);
+    }
+    if (!jumpHeld && vy < -3.2) vy = -3.2;       // высота прыжка зависит от удержания
+
+    vy += gravityNow();
+    if (fastFall && !onGround && vy < 6) vy += 0.8;
+    if (vy > 12) vy = 12;
+    dogY += vy;
+    var ceiling = 3 + dogHeight();                 // макушка не уходит за верх экрана
+    if (dogY < ceiling) { dogY = ceiling; if (vy < 0) vy = 0; }
+    if (dogY >= GROUND) {
+      if (!onGround) dust(DOG_X + 14 * dogScale(), GROUND - 2, 8);
+      dogY = GROUND; vy = 0; onGround = true;
+    }
+    if (onGround && tick % 8 === 0) dust(DOG_X + 8 * dogScale(), GROUND - 1, 1);
+
+    // спавн
+    if (--nextObs <= 0) spawnObstacle();
+    if (--nextTreat <= 0) spawnTreat();
+
+    var hb = hitBox(), i, o, t;
+
+    for (i = obstacles.length - 1; i >= 0; i--) {
+      o = obstacles[i];
+      o.x -= speed;
+      if (o.x + o.w < -20) { obstacles.splice(i, 1); continue; }
+      var ob = { x: o.x + 2, y: GROUND - o.h, w: o.w - 3, h: o.h };
+      if (overlap(hb, ob)) {
+        if (o.type === "puddle") {
+          if (!o.splashed) {
+            o.splashed = true;
+            combo = 0; caught = 0;
+            sfxSplash();
+            dust(o.x + o.w / 2, GROUND - 2, 10, C.water);
+            pop("ЛАПЫ МОКРЫЕ", DOG_X + 28 * dogScale(), GROUND - 60 * dogScale(), C.white);
+          }
+        } else if (invuln <= 0) {
+          takeHit();
+        }
+      }
+    }
+
+    for (i = treats.length - 1; i >= 0; i--) {
+      t = treats[i];
+      t.x -= speed;
+      t.y += t.vy;
+      if (t.y > GROUND - 12) {                   // упало на землю — пропало
+        dust(t.x + 6, GROUND - 2, 5, C.bone);
+        treats.splice(i, 1);
+        combo = 0; caught = 0;
+        continue;
+      }
+      if (t.x < -20) { treats.splice(i, 1); continue; }
+      if (overlap(hb, { x: t.x, y: t.y, w: 17, h: 12 })) {
+        caught++; combo++;
+        var mult = Math.min(4, 1 + Math.floor(combo / 5));
+        var gain = t.value * mult;
+        scoreBonus += gain;
+        sfxCatch();
+        pop("+" + gain, t.x + 6, t.y - 6, mult > 1 ? C.accent : C.white);
+        dust(t.x + 6, t.y + 4, 4, C.accent);
+        treats.splice(i, 1);
+        if (growth < MAX_GROWTH) {               // подросла на одну ступень
+          growth++;
+          sfxGrow();
+          var s = dogScale();
+          dust(DOG_X + 20 * s, dogY - 24 * s, 10, C.fur);
+          if (growth === MAX_GROWTH) pop("РАСКОРМЛЕНА!", DOG_X + 30 * s, dogY - 58 * s, C.good);
+        }
+      }
+    }
+
+    for (i = parts.length - 1; i >= 0; i--) {
+      var p = parts[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12;
+      if (--p.life <= 0) parts.splice(i, 1);
+    }
+
+    for (i = pops.length - 1; i >= 0; i--) {
+      pops[i].y -= 0.45;
+      if (--pops[i].life <= 0) pops.splice(i, 1);
+    }
+  }
+
+  // --- цикл с фиксированным шагом ---
+  var last = 0, acc = 0;
+  function loop(ts) {
+    if (!last) last = ts;
+    var dt = Math.min(100, ts - last);
+    last = ts;
+    acc += dt;
+    var steps = 0;
+    while (acc >= 16.667 && steps < 5) { update(); acc -= 16.667; steps++; }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // --- ввод ---
+  function isJumpKey(e) {
+    return e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW" || e.code === "KeyZ";
+  }
+
+  window.addEventListener("keydown", function (e) {
+    if (isJumpKey(e)) {
+      e.preventDefault();
+      if (!jumpHeld) jump();
+      jumpHeld = true;
+    } else if (e.code === "ArrowDown" || e.code === "KeyS") {
+      e.preventDefault();
+      fastFall = true;
+    } else if (e.code === "KeyP") {
+      if (state === "play") { state = "pause"; stopMusic(); }
+      else if (state === "pause") { state = "play"; startMusic(); }
+    } else if (e.code === "KeyM") {
+      toggleSound();
+    }
+  });
+
+  window.addEventListener("keyup", function (e) {
+    if (isJumpKey(e)) jumpHeld = false;
+    if (e.code === "ArrowDown" || e.code === "KeyS") fastFall = false;
+  });
+
+  cv.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    jumpHeld = true;
+    jump();
+  });
+  window.addEventListener("pointerup", function () { jumpHeld = false; });
+  window.addEventListener("blur", function () {
+    jumpHeld = false; fastFall = false;
+    if (state === "play") { state = "pause"; stopMusic(); }
+  });
+
+  // --- кнопки ---
+  function toggleSound() {
+    muted = !muted;
+    save("bone-muted", muted ? "1" : "0");
+    document.getElementById("btn-sound").textContent = "Звук: " + (muted ? "выкл" : "вкл");
+    if (muted) stopMusic();
+    else if (state === "play") startMusic();
+  }
+
+  document.getElementById("btn-sound").textContent = "Звук: " + (muted ? "выкл" : "вкл");
+  document.getElementById("btn-sound").addEventListener("click", toggleSound);
+  document.getElementById("btn-start").addEventListener("click", function () { startGame(); cv.focus(); });
+
+  document.getElementById("photo").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () { applyPhoto(String(fr.result), true); };
+    fr.readAsDataURL(f);
+    e.target.value = "";
+  });
+
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    photoData = null;
+    try { localStorage.removeItem(PHOTO_KEY); } catch (err) {}
+    applyPhoto(BUILTIN_DOG, false);
+    document.getElementById("btn-clear").hidden = true;
+    document.getElementById("photo-note").textContent = DEFAULT_NOTE;
+  });
+
+  if (photoData) document.getElementById("btn-clear").hidden = false;
+
+  // --- старт ---
+  function boot(data) {
+    if (data && typeof data.best === "number" && data.best > best) best = data.best;
+    if (data && data.photo && !photoData) applyPhoto(data.photo, true);
+    reset();
+    state = "title";
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('8px "Press Start 2P"').catch(function () {});
+    }
+    requestAnimationFrame(loop);
+  }
+
+  try {
+    if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
+      window.claude.hot.snapshot(function () { return { best: best, photo: photoData }; });
+    }
+    if (window.claude && window.claude.hot && window.claude.hot.ready) {
+      window.claude.hot.ready(boot);
+    } else {
+      boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
+    }
+  } catch (e) {
+    boot({});
+  }
+})();
+</script>
+
+</body>
+</html>
