@@ -2,8 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#1A1423">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Косточковый Забег</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
 <style>
@@ -28,7 +31,13 @@
     font-size: 19px;
     line-height: 1.35;
     -webkit-font-smoothing: antialiased;
+    /* на телефоне страница не тянется и не подсвечивает тапы */
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
   }
+
+  canvas, .padbtn, button, .filebtn { -webkit-user-select: none; user-select: none; }
 
   .wrap {
     max-width: 740px;
@@ -67,11 +76,19 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     max-width: 100%;
+    margin: 0 auto;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     background: #6BB6FF;
-    touch-action: manipulation;
+    touch-action: none;          /* тап по экрану — прыжок, а не скролл и не зум */
     cursor: pointer;
+  }
+
+  /* кнопка «вниз» для тач-устройств: под экраном, чтобы не закрывать препятствия */
+  .padbtn {
+    border-color: var(--accent);
+    color: var(--accent);
+    touch-action: none;
   }
 
   .controls {
@@ -133,15 +150,96 @@
 
   .note { color: var(--dim); margin: 0; font-size: 17px; }
 
+  /* --- никнейм и рейтинг --- */
+  .board {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 2px solid var(--edge);
+    padding-top: 14px;
+  }
+
+  .nick-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .nick-row label {
+    font-family: "Press Start 2P", ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  #nick {
+    flex: 1 1 160px;
+    min-width: 0;
+    font-family: "VT323", ui-monospace, monospace;
+    font-size: 20px;
+    padding: 9px 10px;
+    color: var(--ink);
+    background: #16101F;
+    border: 2px solid var(--edge);
+    border-radius: 0;
+  }
+
+  #nick:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  #nick::placeholder { color: #6E5C86; }
+
+  .board-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .board-head h2 {
+    font-family: "Press Start 2P", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .06em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .rating { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .rating li {
+    display: grid;
+    grid-template-columns: 2.2em 1fr auto;
+    gap: 10px;
+    align-items: baseline;
+    padding: 5px 8px;
+    background: #211A2E;
+    color: var(--dim);
+  }
+  .rating li .rank { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .rating li .who { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rating li .pts { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .rating li.me { background: #3A2A12; }
+  .rating li.me .who, .rating li.me .pts { color: var(--accent); }
+  .rating li.empty { display: block; color: var(--dim); background: none; padding-left: 0; }
+
   @media (prefers-reduced-motion: reduce) {
     button, .filebtn { transition: none; }
+  }
+
+  /* --- телефоны --- */
+  @media (max-width: 760px) {
+    body { font-size: 18px; }
+    .wrap { padding-block: 12px 28px; gap: 12px; }
+    h1 { font-size: 15px; text-shadow: 0 2px 0 #7A3E00; }
+    .tagline { font-size: 17px; }
+    .cab { padding: 6px; box-shadow: inset 0 0 0 2px #120D1C, 0 5px 0 #0E0A16; }
+    .controls { gap: 6px; }
+    button, .filebtn { font-size: 9px; padding: 12px 10px; }
+    .legend { gap: 8px 16px; }
+  }
+
+  /* телефон в альбомной ориентации: игра занимает весь экран, текст ниже */
+  @media (orientation: landscape) and (max-height: 560px) {
+    .wrap { padding-block: 6px 20px; }
+    .masthead { display: none; }
+    canvas { max-width: calc((100vh - 120px) * 16 / 9); max-width: calc((100dvh - 120px) * 16 / 9); }
+  }
+
+  @media (hover: none) {
+    button:hover, .filebtn:hover { background: #32264A; }
+    button.primary:hover { background: #7A3E00; }
   }
 </style>
 <link rel="canonical" href="https://pavelvo2.github.io/kostochkovyy-zabeg/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pavelvo2.github.io/kostochkovyy-zabeg/">
 <meta property="og:title" content="Косточковый Забег">
-<meta property="og:description" content="Восьмибитный раннер: ши-тцу бежит по парку, прыгает через заборы и лужи, ловит косточки и растёт от каждой съеденной.">
+<meta property="og:description" content="Восьмибитный раннер: ши-тцу бежит по парку, ловит косточки и растёт от каждой съеденной. С рейтингом игроков.">
 <meta property="og:image" content="https://pavelvo2.github.io/kostochkovyy-zabeg/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -169,12 +267,28 @@
   </div>
 
   <div class="controls">
+    <button id="btn-down" class="padbtn" type="button" hidden aria-label="Быстро вниз">▼ Вниз</button>
     <button id="btn-start" class="primary" type="button">Играть</button>
     <label class="filebtn" for="photo">Фото собаки</label>
     <input type="file" id="photo" accept="image/*">
     <button id="btn-clear" type="button" hidden>Вернуть Шитцу</button>
     <button id="btn-sound" type="button">Звук: вкл</button>
   </div>
+
+  <section class="board">
+    <div class="nick-row">
+      <label for="nick">Игрок</label>
+      <input type="text" id="nick" maxlength="14" placeholder="Введи никнейм" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+      <button id="btn-nick" type="button">Сохранить</button>
+    </div>
+
+    <div class="board-head">
+      <h2>Рейтинг</h2>
+      <button id="btn-refresh" type="button">Обновить</button>
+    </div>
+    <ol id="rating" class="rating"><li class="empty">Загружаю…</li></ol>
+    <p class="note" id="rating-note"></p>
+  </section>
 
   <p class="note" id="photo-note">В игре бежит настоящая ши-тцу — её морда вшита в страницу и видна у всех, кто откроет ссылку. Кнопка «Фото собаки» подставит вместо неё чью-то другую, только в этом браузере.</p>
 
@@ -281,6 +395,120 @@
   } catch (e) { /* приватный режим — играем без сохранений */ }
 
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // --- никнейм и рейтинг ---------------------------------------------------
+  // Общий рейтинг живёт в Firebase Realtime Database и читается/пишется по REST,
+  // без подключения SDK. Пустой адрес — играем с таблицей только на этом устройстве.
+  var FIREBASE_DB = "https://pavel-vo2-default-rtdb.europe-west1.firebasedatabase.app";
+
+  var NICK_KEY = "bone-nick", TOP_KEY = "bone-top";
+  var nick = "";
+  try { nick = localStorage.getItem(NICK_KEY) || ""; } catch (e) {}
+
+  function online() { return !!FIREBASE_DB; }
+
+  // ключ записи в базе: по одной строке на игрока, а не по строке на забег
+  function nickId(n) {
+    var id = String(n).toLowerCase().replace(/[.$#\[\]\/\s]+/g, "_").slice(0, 24);
+    return id || "igrok";
+  }
+
+  function localTop() {
+    try { return JSON.parse(localStorage.getItem(TOP_KEY) || "[]"); } catch (e) { return []; }
+  }
+
+  function saveLocal(name, value) {
+    var list = localTop(), found = false, i;
+    for (i = 0; i < list.length; i++) {
+      if (list[i].name === name) { found = true; if (value > list[i].score) list[i].score = value; }
+    }
+    if (!found) list.push({ name: name, score: value });
+    list.sort(function (a, b) { return b.score - a.score; });
+    list = list.slice(0, 10);
+    save(TOP_KEY, JSON.stringify(list));
+    return list;
+  }
+
+  function fetchJSON(url, options) {
+    if (!window.fetch) return Promise.reject(new Error("no fetch"));
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var opts = options || {};
+    if (ctrl) opts.signal = ctrl.signal;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+    return fetch(url, opts).then(function (r) {
+      clearTimeout(timer);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }, function (e) { clearTimeout(timer); throw e; });
+  }
+
+  function renderBoard(list, note) {
+    var box = document.getElementById("rating");
+    box.innerHTML = "";
+    if (!list.length) {
+      var li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = "Пока пусто — первый забег будет первым местом.";
+      box.appendChild(li);
+    }
+    for (var i = 0; i < list.length; i++) {
+      var row = document.createElement("li");
+      if (nick && list[i].name === nick) row.className = "me";
+      var rank = document.createElement("span");
+      rank.className = "rank";
+      rank.textContent = (i + 1) + ".";
+      var who = document.createElement("span");
+      who.className = "who";
+      who.textContent = list[i].name;
+      var pts = document.createElement("span");
+      pts.className = "pts";
+      pts.textContent = list[i].score;
+      row.appendChild(rank); row.appendChild(who); row.appendChild(pts);
+      box.appendChild(row);
+    }
+    document.getElementById("rating-note").textContent = note;
+  }
+
+  function showLocalBoard(extra) {
+    var fallback = online()
+      ? "Общий рейтинг недоступен — показаны результаты этого устройства."
+      : "Рейтинг хранится в этом браузере: общий пока не подключён.";
+    renderBoard(localTop(), extra || fallback);
+  }
+
+  function loadBoard() {
+    if (!online()) { showLocalBoard("Рейтинг хранится в этом браузере: общий пока не подключён."); return; }
+    fetchJSON(FIREBASE_DB + '/scores.json?orderBy="score"&limitToLast=10').then(function (data) {
+      var list = [];
+      for (var key in data) {
+        if (data[key] && typeof data[key].score === "number") {
+          list.push({ name: String(data[key].name || "Игрок"), score: data[key].score });
+        }
+      }
+      list.sort(function (a, b) { return b.score - a.score; });
+      renderBoard(list, nick ? "Общий рейтинг всех, кто играл по ссылке." :
+        "Общий рейтинг всех, кто играл по ссылке. Введи никнейм, чтобы попасть в него.");
+    }, function () {
+      showLocalBoard("Не удалось достучаться до общего рейтинга — показаны результаты этого устройства.");
+    });
+  }
+
+  function submitScore(value) {
+    if (value <= 0) return;
+    saveLocal(nick || "Игрок", value);
+    if (!online() || !nick) { showLocalBoard(nick ? undefined : "Введи никнейм, чтобы результат попал в общий рейтинг."); return; }
+    var url = FIREBASE_DB + "/scores/" + nickId(nick) + ".json";
+    fetchJSON(url).then(function (cur) {
+      if (cur && typeof cur.score === "number" && cur.score >= value) return null;
+      return fetchJSON(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: nick, score: value, ts: Date.now() })
+      });
+    }).then(function () { loadBoard(); }, function () {
+      showLocalBoard("Результат сохранён локально: общий рейтинг сейчас недоступен.");
+    });
+  }
 
   // --- звук ---
   var actx = null, musicTimer = null, mStep = 0;
@@ -722,6 +950,14 @@
       else { px(8 + i * 13, 22, 10, 7, "#00000033"); }
     }
 
+    if (nick) {
+      var tag = nick.length > 10 ? nick.slice(0, 10) : nick;
+      ctx.fillStyle = C.black;
+      ctx.fillText(tag, 9, 35);
+      ctx.fillStyle = C.white;
+      ctx.fillText(tag, 8, 34);
+    }
+
     if (combo >= 5) {
       var mult = Math.min(4, 1 + Math.floor(combo / 5));
       var txt = "x" + mult;
@@ -890,6 +1126,7 @@
     sfxOver();
     if (score > best) { best = score; save("bone-best", String(best)); }
     document.getElementById("btn-start").textContent = "Ещё раз";
+    submitScore(score);
   }
 
   function jump() {
@@ -1035,7 +1272,13 @@
     return e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW" || e.code === "KeyZ";
   }
 
+  function typingInField(e) {
+    var t = e.target;
+    return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+  }
+
   window.addEventListener("keydown", function (e) {
+    if (typingInField(e)) return;               // пробел в поле никнейма — это пробел
     if (isJumpKey(e)) {
       e.preventDefault();
       if (!jumpHeld) jump();
@@ -1052,20 +1295,40 @@
   });
 
   window.addEventListener("keyup", function (e) {
+    if (typingInField(e)) return;
     if (isJumpKey(e)) jumpHeld = false;
     if (e.code === "ArrowDown" || e.code === "KeyS") fastFall = false;
   });
 
   cv.addEventListener("pointerdown", function (e) {
     e.preventDefault();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     jumpHeld = true;
     jump();
   });
+  cv.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   window.addEventListener("pointerup", function () { jumpHeld = false; });
-  window.addEventListener("blur", function () {
+  window.addEventListener("pointercancel", function () { jumpHeld = false; fastFall = false; });
+
+  function pauseIfPlaying() {
     jumpHeld = false; fastFall = false;
     if (state === "play") { state = "pause"; stopMusic(); }
+  }
+
+  window.addEventListener("blur", pauseIfPlaying);
+  // на телефоне сворачивание приложения не всегда шлёт blur
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) pauseIfPlaying();
   });
+
+  // экранная кнопка быстрого падения — только там, где нет клавиатуры
+  var btnDown = document.getElementById("btn-down");
+  if (TAP === "ТАП") {
+    btnDown.hidden = false;
+    btnDown.addEventListener("pointerdown", function (e) { e.preventDefault(); fastFall = true; });
+    btnDown.addEventListener("pointerup", function (e) { e.preventDefault(); fastFall = false; });
+    btnDown.addEventListener("pointerleave", function () { fastFall = false; });
+  }
 
   // --- кнопки ---
   function toggleSound() {
@@ -1078,6 +1341,27 @@
 
   document.getElementById("btn-sound").textContent = "Звук: " + (muted ? "выкл" : "вкл");
   document.getElementById("btn-sound").addEventListener("click", toggleSound);
+
+  var nickInput = document.getElementById("nick");
+  nickInput.value = nick;
+
+  function saveNick() {
+    var v = nickInput.value.replace(/\s+/g, " ").trim().slice(0, 14);
+    nick = v;
+    nickInput.value = v;
+    save(NICK_KEY, v);
+    nickInput.blur();
+    loadBoard();
+  }
+
+  document.getElementById("btn-nick").addEventListener("click", saveNick);
+  nickInput.addEventListener("keydown", function (e) {
+    e.stopPropagation();                        // пробел в никнейме — не прыжок
+    if (e.key === "Enter") saveNick();
+  });
+  nickInput.addEventListener("keyup", function (e) { e.stopPropagation(); });
+  nickInput.addEventListener("change", saveNick);
+  document.getElementById("btn-refresh").addEventListener("click", loadBoard);
   document.getElementById("btn-start").addEventListener("click", function () { startGame(); cv.focus(); });
 
   document.getElementById("photo").addEventListener("change", function (e) {
@@ -1108,6 +1392,7 @@
     if (document.fonts && document.fonts.load) {
       document.fonts.load('8px "Press Start 2P"').catch(function () {});
     }
+    loadBoard();
     requestAnimationFrame(loop);
   }
 
